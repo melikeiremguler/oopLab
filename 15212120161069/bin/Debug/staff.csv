@@ -1,0 +1,3 @@
+image,id,name,surname,address,bmo,salary,city,experience,managmentPosition,academicDegree,familyStatus,foreignLanguage
+System.Drawing.Bitmap,1,irem,guler,esk,4500,11700,TR31: İzmir,2-4,Proje Yöneticisi ,Meslek alanı ile ilgili doktora;,0-6 yaş arası çocuk;,Belgelendirilmiş İngilizce bilgisi;
+System.Drawing.Bitmap,3,ssss,,,4500,7650,,,,Meslek alanı ile ilgili doktora;,18 yaş üstü çocuk(Üniversite lisans / ön lisans öğrencisi olmak koşuluyla);,
