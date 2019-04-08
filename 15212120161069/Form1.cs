@@ -21,25 +21,25 @@ namespace _15212120161069
         public Form1()
         {
             InitializeComponent();
-           
+
         }
 
-        
+
         int id = 1;
         DataTable dt = new DataTable();
-        
+
         private void Form1_Load(object sender, EventArgs e)
         {
 
-          
-            dt.Columns.AddRange(new DataColumn[13] { new DataColumn("Image", typeof(Image)), new DataColumn("ID", typeof(Int32)), new DataColumn("Name", typeof(String)), new DataColumn("Surname", typeof(String)), new DataColumn("Address", typeof(String)), new DataColumn("BMO", typeof(double)), new DataColumn("Salary", typeof(double)), new DataColumn("City", typeof(String)), new DataColumn("Experience", typeof(String)), new DataColumn("Management Position", typeof(String)) , new DataColumn("Academic Degree", typeof(String)) , new DataColumn("Family Status", typeof(String)), new DataColumn("Foreign Language", typeof(String)) });
+
+            dt.Columns.AddRange(new DataColumn[13] { new DataColumn("Image", typeof(Image)), new DataColumn("ID", typeof(Int32)), new DataColumn("Name", typeof(String)), new DataColumn("Surname", typeof(String)), new DataColumn("Address", typeof(String)), new DataColumn("BMO", typeof(double)), new DataColumn("Salary", typeof(double)), new DataColumn("City", typeof(String)), new DataColumn("Experience", typeof(String)), new DataColumn("Management Position", typeof(String)), new DataColumn("Academic Degree", typeof(String)), new DataColumn("Family Status", typeof(String)), new DataColumn("Foreign Language", typeof(String)) });
 
             dgvStaff.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
             Directory.CreateDirectory(@"C:\Users\İrem Güler\Source\Repos\15212120161069\15212120161069\bin\Debug\ImageStaff");
 
-            cSVToolStripMenuItem1_Click( sender,  e);
+            cSVToolStripMenuItem1_Click(sender, e);
 
-            if (dgvStaff.RowCount!= 0)
+            if (dgvStaff.RowCount != 0)
             {
                 id = (int)dgvStaff.Rows[dgvStaff.RowCount - 1].Cells[1].Value + 1;
             }
@@ -52,7 +52,7 @@ namespace _15212120161069
         private void btnSil_Click(object sender, EventArgs e)
         {
 
-            foreach(DataGridViewRow row in dgvStaff.Rows)
+            foreach (DataGridViewRow row in dgvStaff.Rows)
             {
 
                 if (row.Selected)
@@ -71,9 +71,9 @@ namespace _15212120161069
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
-          
-           
-            dt.Rows.Add(pcbFoto.Image,id, txbName.Text, txbSurname.Text, txbAddress.Text, 4500,4500, cmbCity.Text, cmbExperience.Text, cmbManagment.Text);
+
+
+            dt.Rows.Add(pcbFoto.Image, id, txbName.Text, txbSurname.Text, txbAddress.Text, 4500, 4500, cmbCity.Text, cmbExperience.Text, cmbManagment.Text);
 
 
             string filename = Application.StartupPath + @"\ImageStaff\" + id + ".jpg";
@@ -86,23 +86,23 @@ namespace _15212120161069
             id++;
             dgvStaff.DataSource = dt;
 
-            dgvStaff.Rows[dgvStaff.RowCount-1].Cells[6].Value = bmo_calculate()*4500;
-            checklist_checeked_find(clbDegree.Items.Count, 10, clbDegree);
-            checklist_checeked_find(clbFamily.Items.Count, 11, clbFamily);
-            checklist_checeked_find(clbLanguage.Items.Count, 12, clbLanguage);
+            dgvStaff.Rows[dgvStaff.RowCount - 1].Cells[6].Value = bmo_calculate();
+            checklist_checeked_find(clbDegree.Items.Count, 10, clbDegree, false);
+            checklist_checeked_find(clbFamily.Items.Count, 11, clbFamily, false);
+            checklist_checeked_find(clbLanguage.Items.Count, 12, clbLanguage, false);
 
-            
-           
+
+
         }
-       
-   
+
+
         private void dgvStaff_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
             TextBox TB = (TextBox)e.Control;
             TB.Multiline = true;
         }
 
-       
+
         private void btnYukle_Click(object sender, EventArgs e)
         {
             Image File;
@@ -140,27 +140,43 @@ namespace _15212120161069
             staffdetail.txblanguage.Text = this.dgvStaff.CurrentRow.Cells[12].Value.ToString();
             staffdetail.Show();
         }
-        private void checklist_checeked_find(int count,int cell,CheckedListBox listBox)
+        private void checklist_checeked_find(int count, int cell, CheckedListBox listBox, bool update)
         {
-            for (int i = 0; i <count; i++)
+            if (update)
             {
-                if (listBox.GetItemChecked(i) == true)
+                dgvStaff.CurrentRow.Cells[cell].Value = "";
+                for (int i = 0; i < count; i++)
                 {
-                    dgvStaff.Rows[dgvStaff.RowCount - 1].Cells[cell].Value += listBox.Items[i] + Environment.NewLine;
+                    if (listBox.GetItemChecked(i) == true)
+                    {
+                        dgvStaff.CurrentRow.Cells[cell].Value += listBox.Items[i] + Environment.NewLine;
 
+                    }
+                }
+            }
+            else
+            {
+
+                for (int i = 0; i < count; i++)
+                {
+                    if (listBox.GetItemChecked(i) == true)
+                    {
+                        dgvStaff.Rows[dgvStaff.RowCount - 1].Cells[cell].Value += listBox.Items[i] + Environment.NewLine;
+
+                    }
                 }
             }
         }
         public double bmo_calculate()
         {
-            double sum=0;
-            for(int i=0;i<clbDegree.Items.Count;i++)
+            double sum = 0;
+            for (int i = 0; i < clbDegree.Items.Count; i++)
             {
                 if (clbDegree.GetItemChecked(i) == true)
                 {
-                    if(clbDegree.Items[i].ToString()== "Meslek alanı ile ilgili yüksek lisans")
+                    if (clbDegree.Items[i].ToString() == "Meslek alanı ile ilgili yüksek lisans")
                     {
-                        sum+=0.10;
+                        sum += 0.10;
                     }
                     else if (clbDegree.Items[i].ToString() == "Meslek alanı ile ilgili doktora")
                     {
@@ -233,7 +249,7 @@ namespace _15212120161069
             else if (cmbCity.SelectedIndex == 2) { sum += 0.10; }
             else if (cmbCity.SelectedIndex == 3) { sum += 0.05; }
             else if (cmbCity.SelectedIndex == 4) { sum += 0.05; }
-            else if (cmbCity.SelectedIndex > 4&&cmbCity.SelectedIndex<=10) { sum += 0.05; }
+            else if (cmbCity.SelectedIndex > 4 && cmbCity.SelectedIndex <= 10) { sum += 0.05; }
             else { sum += 0; }
 
             if (cmbExperience.SelectedIndex == 0) { sum += 0; }
@@ -250,16 +266,16 @@ namespace _15212120161069
             else if (cmbManagment.SelectedIndex == 0) { sum += 0.40; }
             else { sum += 0; }
 
-            return sum + 1;
+            return (sum + 1) * 4500;
         }
 
-       
+
 
         private void cSVToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string temp;
-         
-        
+
+
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.FileName = "staff.csv";
             saveFileDialog.Filter = "CSV File | *.csv";
@@ -271,7 +287,7 @@ namespace _15212120161069
 
                 writer.Write("image,id,name,surname,address,bmo,salary,city,experience,managmentPosition,academicDegree,familyStatus,foreignLanguage\n");
 
-                
+
                 for (int i = 0; i < dgvStaff.RowCount; i++)
                 {
                     for (int j = 0; j < dgvStaff.ColumnCount; j++)
@@ -292,13 +308,13 @@ namespace _15212120161069
                         }
 
                     }
-                   
+
                 }
                 writer.Dispose();
                 writer.Close();
 
             }
-         
+
         }
 
         private void tSVToolStripMenuItem_Click(object sender, EventArgs e)
@@ -335,7 +351,7 @@ namespace _15212120161069
 
                     }
                 }
-                writer.Dispose();   
+                writer.Dispose();
                 writer.Close();
             }
 
@@ -345,18 +361,18 @@ namespace _15212120161069
         {
             string filename;
             General general = new General();
-            dt= general.Loadcsvfile(Application.StartupPath + "/staff.csv");
+            dt = general.Loadcsvfile(Application.StartupPath + "/staff.csv");
 
             dgvStaff.Rows.Clear();
             dgvStaff.DataSource = dt;
 
-           
 
+            string temp;
 
             for (int i = 0; i < dt.Rows.Count; i++)
             {
                 filename = Application.StartupPath + @"\ImageStaff\" + (int)dgvStaff.Rows[i].Cells[1].Value + ".jpg";
-                
+
 
                 Image image;
                 using (var bmpTemp = new Bitmap(filename))
@@ -365,8 +381,21 @@ namespace _15212120161069
                 }
 
                 dgvStaff.Rows[i].Cells[0].Value = image;
+
+
+                temp = dgvStaff.Rows[i].Cells[10].Value.ToString();
+                temp = temp.Replace(";", "\r\n");
+                dgvStaff.Rows[i].Cells[10].Value = temp;
+
+                temp = dgvStaff.Rows[i].Cells[11].Value.ToString();
+                temp = temp.Replace(";", "\r\n");
+                dgvStaff.Rows[i].Cells[11].Value = temp;
+
+                temp = dgvStaff.Rows[i].Cells[12].Value.ToString();
+                temp = temp.Replace(";", "\r\n");
+                dgvStaff.Rows[i].Cells[12].Value = temp;
             }
-           
+
 
 
         }
@@ -379,12 +408,16 @@ namespace _15212120161069
 
         private void btnUpdate_Click(object sender, EventArgs e)
         {
+
             int geciciid = (int)dgvStaff.CurrentRow.Cells[1].Value;
-            Int32 salary = (Int32)(this.dgvStaff.CurrentRow.Cells[6].Value);
             Image gecici = (Image)dgvStaff.CurrentRow.Cells[0].Value;
+            checklist_checeked_find(clbDegree.Items.Count, 10, clbDegree, true);
+            checklist_checeked_find(clbFamily.Items.Count, 11, clbFamily, true);
+            checklist_checeked_find(clbLanguage.Items.Count, 12, clbLanguage, true);
+            double salary = bmo_calculate();
             dgvStaff.CurrentRow.SetValues(gecici, geciciid, txbName.Text, txbSurname.Text, txbAddress.Text, 4500, salary, cmbCity.Text, cmbExperience.Text, cmbManagment.Text);
 
-          
+
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -408,6 +441,7 @@ namespace _15212120161069
                 }
             }
         }
+
     }
 }
 
