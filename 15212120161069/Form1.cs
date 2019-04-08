@@ -12,6 +12,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using CsvHelper;
 using System.Drawing.Imaging;
+using Newtonsoft.Json;
 
 namespace _15212120161069
 {
@@ -35,7 +36,7 @@ namespace _15212120161069
             dt.Columns.AddRange(new DataColumn[13] { new DataColumn("Image", typeof(Image)), new DataColumn("ID", typeof(Int32)), new DataColumn("Name", typeof(String)), new DataColumn("Surname", typeof(String)), new DataColumn("Address", typeof(String)), new DataColumn("BMO", typeof(double)), new DataColumn("Salary", typeof(double)), new DataColumn("City", typeof(String)), new DataColumn("Experience", typeof(String)), new DataColumn("Management Position", typeof(String)) , new DataColumn("Academic Degree", typeof(String)) , new DataColumn("Family Status", typeof(String)), new DataColumn("Foreign Language", typeof(String)) });
 
             dgvStaff.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
-            Directory.CreateDirectory(@"C:\Users\İrem Güler\Source\Repos\15212120161069\15212120161069\bin\Debug\ImageStaff");
+            Directory.CreateDirectory(@"C:\Users\Tuce Maide Tekes\Desktop\ooplabproje\15212120161069\15212120161069\bin\Debug\ImageStaff");
 
             cSVToolStripMenuItem1_Click( sender,  e);
 
@@ -86,10 +87,10 @@ namespace _15212120161069
             id++;
             dgvStaff.DataSource = dt;
 
-            dgvStaff.Rows[dgvStaff.RowCount-1].Cells[6].Value = bmo_calculate()*4500;
-            checklist_checeked_find(clbDegree.Items.Count, 10, clbDegree);
-            checklist_checeked_find(clbFamily.Items.Count, 11, clbFamily);
-            checklist_checeked_find(clbLanguage.Items.Count, 12, clbLanguage);
+            dgvStaff.Rows[dgvStaff.RowCount-1].Cells[6].Value = bmo_calculate();
+            checklist_checeked_find(clbDegree.Items.Count, 10, clbDegree,false);
+            checklist_checeked_find(clbFamily.Items.Count, 11, clbFamily,false);
+            checklist_checeked_find(clbLanguage.Items.Count, 12, clbLanguage,false);
 
             
            
@@ -140,14 +141,30 @@ namespace _15212120161069
             staffdetail.txblanguage.Text = this.dgvStaff.CurrentRow.Cells[12].Value.ToString();
             staffdetail.Show();
         }
-        private void checklist_checeked_find(int count,int cell,CheckedListBox listBox)
+        private void checklist_checeked_find(int count, int cell, CheckedListBox listBox, bool update)
         {
-            for (int i = 0; i <count; i++)
+            if (update)
             {
-                if (listBox.GetItemChecked(i) == true)
+                dgvStaff.CurrentRow.Cells[cell].Value = "";
+                for (int i = 0; i < count; i++)
                 {
-                    dgvStaff.Rows[dgvStaff.RowCount - 1].Cells[cell].Value += listBox.Items[i] + Environment.NewLine;
+                    if (listBox.GetItemChecked(i) == true)
+                    {
+                        dgvStaff.CurrentRow.Cells[cell].Value += listBox.Items[i] + Environment.NewLine;
 
+                    }
+                }
+            }
+            else
+            {
+
+                for (int i = 0; i < count; i++)
+                {
+                    if (listBox.GetItemChecked(i) == true)
+                    {
+                        dgvStaff.Rows[dgvStaff.RowCount - 1].Cells[cell].Value += listBox.Items[i] + Environment.NewLine;
+
+                    }
                 }
             }
         }
@@ -250,13 +267,18 @@ namespace _15212120161069
             else if (cmbManagment.SelectedIndex == 0) { sum += 0.40; }
             else { sum += 0; }
 
-            return sum + 1;
+            if (cbxparttime.SelectedIndex == 0) { return ((sum + 1) * 4500) / 2; }
+            else { return ((sum + 1) * 4500); }
+           
         }
 
        
 
         private void cSVToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            progressBarexport.Value = 0;
+            timerprogres.Enabled = true;
+
             string temp;
          
         
@@ -285,10 +307,12 @@ namespace _15212120161069
                         if (j < dgvStaff.ColumnCount - 1)
                         {
                             writer.Write(",");
+                            timerprogres_Tick(sender, e);
                         }
                         else
                         {
                             writer.Write("\n");
+                            timerprogres_Tick(sender, e);
                         }
 
                     }
@@ -298,11 +322,14 @@ namespace _15212120161069
                 writer.Close();
 
             }
-         
+            progressBarexport.Value = 100;
         }
 
         private void tSVToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            progressBarexport.Value = 0;
+            timerprogres.Enabled = true;
+
             string temp;
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.FileName = "staff.csv";
@@ -327,10 +354,12 @@ namespace _15212120161069
                         if (j < dgvStaff.ColumnCount - 1)
                         {
                             writer.Write("\t");
+                            timerprogres_Tick(sender, e);
                         }
                         else
                         {
                             writer.Write("\n");
+                            timerprogres_Tick(sender, e);
                         }
 
                     }
@@ -338,25 +367,28 @@ namespace _15212120161069
                 writer.Dispose();   
                 writer.Close();
             }
-
+            progressBarexport.Value = 100;
         }
 
         private void cSVToolStripMenuItem1_Click(object sender, EventArgs e)
         {
+            progressBarexport.Value = 0;
+            timerprogres.Enabled = true;
+
             string filename;
             General general = new General();
-            dt= general.Loadcsvfile(Application.StartupPath + "/staff.csv");
+            dt = general.Loadcsvfile(Application.StartupPath + "/staff.csv");
 
-            dgvStaff.Rows.Clear();
+          //  dgvStaff.Rows.Clear();
             dgvStaff.DataSource = dt;
 
-           
 
+            string temp;
 
             for (int i = 0; i < dt.Rows.Count; i++)
             {
                 filename = Application.StartupPath + @"\ImageStaff\" + (int)dgvStaff.Rows[i].Cells[1].Value + ".jpg";
-                
+
 
                 Image image;
                 using (var bmpTemp = new Bitmap(filename))
@@ -365,11 +397,26 @@ namespace _15212120161069
                 }
 
                 dgvStaff.Rows[i].Cells[0].Value = image;
+
+
+                temp = dgvStaff.Rows[i].Cells[10].Value.ToString();
+                temp = temp.Replace(";", "\r\n");
+                dgvStaff.Rows[i].Cells[10].Value = temp;
+
+                temp = dgvStaff.Rows[i].Cells[11].Value.ToString();
+                temp = temp.Replace(";", "\r\n");
+                dgvStaff.Rows[i].Cells[11].Value = temp;
+
+                temp = dgvStaff.Rows[i].Cells[12].Value.ToString();
+                temp = temp.Replace(";", "\r\n");
+                dgvStaff.Rows[i].Cells[12].Value = temp;
+                timerprogres_Tick(sender, e);
             }
-           
 
 
+            progressBarexport.Value = 100;
         }
+
         public byte[] imageToByteArray(System.Drawing.Image imageIn)
         {
             MemoryStream ms = new MemoryStream();
@@ -380,11 +427,13 @@ namespace _15212120161069
         private void btnUpdate_Click(object sender, EventArgs e)
         {
             int geciciid = (int)dgvStaff.CurrentRow.Cells[1].Value;
-            Int32 salary = (Int32)(this.dgvStaff.CurrentRow.Cells[6].Value);
             Image gecici = (Image)dgvStaff.CurrentRow.Cells[0].Value;
+            checklist_checeked_find(clbDegree.Items.Count, 10, clbDegree, true);
+            checklist_checeked_find(clbFamily.Items.Count, 11, clbFamily, true);
+            checklist_checeked_find(clbLanguage.Items.Count, 12, clbLanguage, true);
+            double salary = bmo_calculate();
             dgvStaff.CurrentRow.SetValues(gecici, geciciid, txbName.Text, txbSurname.Text, txbAddress.Text, 4500, salary, cmbCity.Text, cmbExperience.Text, cmbManagment.Text);
 
-          
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -407,6 +456,40 @@ namespace _15212120161069
                         break;
                 }
             }
+        }
+
+        private void timerprogres_Tick(object sender, EventArgs e)
+        {
+            progressBarexport.Minimum = 0;
+            progressBarexport.Maximum = 100;
+            progressBarexport.Step = 1;
+            timerprogres.Interval = 1000;
+
+            if (progressBarexport.Value == progressBarexport.Maximum)
+            {
+                timerprogres.Enabled = false;
+
+
+
+                return;
+            }
+
+            progressBarexport.Value += 10;
+        }
+
+        private void jSONToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            progressBarexport.Value = 0;
+            timerprogres.Enabled = true;
+            string output = JsonConvert.SerializeObject(dt);
+            timerprogres_Tick(sender, e);
+            System.IO.File.WriteAllText("jsonklasor.json", output);
+            progressBarexport.Value = 100;
+        }
+
+        private void tSVToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
