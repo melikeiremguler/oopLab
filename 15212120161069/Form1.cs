@@ -36,7 +36,7 @@ namespace _15212120161069
             dt.Columns.AddRange(new DataColumn[13] { new DataColumn("Image", typeof(Image)), new DataColumn("ID", typeof(Int32)), new DataColumn("Name", typeof(String)), new DataColumn("Surname", typeof(String)), new DataColumn("Address", typeof(String)), new DataColumn("BMO", typeof(double)), new DataColumn("Salary", typeof(double)), new DataColumn("City", typeof(String)), new DataColumn("Experience", typeof(String)), new DataColumn("Management Position", typeof(String)) , new DataColumn("Academic Degree", typeof(String)) , new DataColumn("Family Status", typeof(String)), new DataColumn("Foreign Language", typeof(String)) });
 
             dgvStaff.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
-            Directory.CreateDirectory(@"C:\Users\Tuce Maide Tekes\Desktop\ooplabproje\15212120161069\15212120161069\bin\Debug\ImageStaff");
+            Directory.CreateDirectory(@"C:\Users\İrem Güler\Desktop\oopLab\15212120161069\bin\Debug\ImageStaff");
 
             cSVToolStripMenuItem1_Click( sender,  e);
 
@@ -379,7 +379,7 @@ namespace _15212120161069
             General general = new General();
             dt = general.Loadcsvfile(Application.StartupPath + "/staff.csv");
 
-          //  dgvStaff.Rows.Clear();
+           dgvStaff.Rows.Clear();
             dgvStaff.DataSource = dt;
 
 
