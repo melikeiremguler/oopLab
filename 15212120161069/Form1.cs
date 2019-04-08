@@ -487,10 +487,7 @@ namespace _15212120161069
             progressBarexport.Value = 100;
         }
 
-        private void tSVToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-
-        }
+       
     }
 }
 
